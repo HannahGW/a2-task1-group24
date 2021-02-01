@@ -1,0 +1,47 @@
+---
+title: "salmon_group24"
+author: "Hannah Garcia, Vanessa Rathbone, Tom Wheeler"
+date: "1/29/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(here)
+library(lubridate)
+library(tsibble)
+```
+
+#### Willamette Falls adult fish passage 
+
+Summary: This report will look at the adult fish passage recorded from January 2001 to December 2010 at the Willamette Falls fish ladder on the Willamette River (Oregon). This data was recorded by and accessible through the Columbia River DART project. Fish counting through Willamette Falls fishway was recorded using video cameras and time lapsed video recorders to record fish passage 24 hrs/day, 365 days/year.
+
+Source: **Columbia River DART (Data Access in Real Time), 2010.** Data Courtesy of U.S. Army Corps of Engineers, NWD and Chelan, Douglas, and Grant County PUDs, Yakima Klickitat Fisheries Project, Colville Tribes Fish & Wildlife (OBMEP), Oregon Department of Fish & Wildlife, Washington Department of Fish & Wildlife. http://www.cbr.washington.edu/dart/query/adult_graph_text
+
+![Sockeye Salmon *(Oncorhynchus nerka)* Credit: Jason Ching/U. Washington](images/sockeye_salmon1.jpg)
+
+```{r}
+#basic info we should review from the metadata: http://www.cbr.washington.edu/dart/query/adult_proj_sum
+
+#Willamette Falls: The Willamette Falls fish ladder was not operational on the following dates:
+
+#11/29/2005-12/1/2005, 12/6/2005-12/8/2005, 12/13/2005-12/14/2005
+#8/26/2008-9/21/2008
+#8/23/2010-8/27/2010
+#8/28/2020-10/5/2020: The Willamette Falls fishway was shut down for repairs from August 28 - October 5, 2020, which precluded passage above the falls. The extended fishway closure resulted in delayed migration and large numbers of fish holding below the falls. No pinniped activity was observed below the falls during this time period and no fish mortality events were reported suggesting the closure did not result in a significant loss in the fish population.
+
+#Calculating the 10 year averages: The ten year averages are calculated by DART for each calendar day of data at each project. For the current year and any given project/month/day, the data is summed from the previous 10 years and divided by the number of non-null data points available during that 10 year span.
+
+
+```
+
+
+```{r}
+#read in and wrangle the data
+
+fish_main <- read_csv(here("data", "willamette_fish_passage.csv"))
+
+```
+
