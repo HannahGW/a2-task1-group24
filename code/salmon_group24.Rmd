@@ -2,7 +2,9 @@
 title: "salmon_group24"
 author: "Hannah Garcia, Vanessa Rathbone, Tom Wheeler"
 date: "1/29/2021"
-output: html_document
+output: 
+  html_document:
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
@@ -23,9 +25,13 @@ Summary: This report will look at the adult fish passage recorded from January 2
 
 Source: **Columbia River DART (Data Access in Real Time), 2010.** Data Courtesy of U.S. Army Corps of Engineers, NWD and Chelan, Douglas, and Grant County PUDs, Yakima Klickitat Fisheries Project, Colville Tribes Fish & Wildlife (OBMEP), Oregon Department of Fish & Wildlife, Washington Department of Fish & Wildlife. http://www.cbr.washington.edu/dart/query/adult_graph_text
 
-![Sockeye Salmon *(Oncorhynchus nerka)* Credit: Jason Ching/U. Washington](images/sockeye_salmon1.jpg)
 
 ```{r}
+# ![Sockeye Salmon *(Oncorhynchus nerka)* Credit: Jason Ching/U. Washington](images/sockeye_salmon1.jpg) # moved the image here. I can't get it to work either..
+
+# **Figure 1.** Map of Willamette Fish Ladder. 
+# ![Credit: US Army Corp of Engineers (link: https://www.nwp.usace.army.mil/willamette/locks/)](images/Willamette_Falls_Locks_area_map.jpg)
+
 #basic info we should review from the metadata: http://www.cbr.washington.edu/dart/query/adult_proj_sum
 
 #Willamette Falls: The Willamette Falls fish ladder was not operational on the following dates:
@@ -68,11 +74,12 @@ fish_ts_longer <- fish_main %>%
   select(-total_count) %>% 
   rename(total_count = value)
 
+
 ```
 
 Explore the data
 ```{r}
-
+# we'll want to hide all these outputs.
 #explore the data
 
 #individually
@@ -117,12 +124,34 @@ ggplot(data = fish_year, aes(x = yearly, y = yearly_mean_count)) +
 
 ```
 
-## Tab 1 - Hannah
-```{r}
+## Tab 1 - Time Series (Hannah) {.tabset}
+```{r, fig.cap="**Figure 2.** Counts of Coho, Jack Coho, and Steelhead Salmon between 2001-2010"}
+# explore data with initial graph
+ggplot(data = fish_ts_longer, aes(x=date, y=total_count)) +
+  geom_line(aes(color=species)) +
+  facet_wrap(~month(date, label = TRUE)) 
+
+# Testing filtering out year. 2005-2010
+# fish_year_filter <- fish_ts_longer %>% 
+#   filter_index("2005-01" ~ "2010-12")
+# 
+# ggplot(data = fish_year_filter, aes(x=date, y=total_count)) +
+#   geom_line(aes(color=species)) +
+#   facet_wrap(~year(date, label = TRUE))
+
+# Filter for individual species and then use pathwork to combine the figures
+# coho
+
+# fish_coho <- fish_ts_longer %>% 
+#   filter(species == "coho")
+# 
+# coho_ts <- ggplot(data=fish_coho, aes(x=date, y=total_count)) +
+#   geom_line() %>% 
+#   facet_wrap(~month(date, label = TRUE))
 
 ```
 
-## Tab 2 - Vanessa Season Plots
+## Tab 2 - Season Plots (Vanessa) {.tabset}
 ```{r}
 
 #explore total counts with season plots
@@ -146,7 +175,7 @@ fish_month %>%
 
 ```
 
-## Tab 3 - Tom
+## Tab 3 - Annual Counts by Species (Tom) {.tabset}
 ```{r}
 
 ```
