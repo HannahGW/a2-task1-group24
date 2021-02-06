@@ -12,6 +12,9 @@ library(tidyverse)
 library(here)
 library(lubridate)
 library(tsibble)
+library(janitor)
+library(feasts)
+library(slider)
 ```
 
 #### Willamette Falls adult fish passage 
@@ -41,7 +44,109 @@ Source: **Columbia River DART (Data Access in Real Time), 2010.** Data Courtesy 
 ```{r}
 #read in and wrangle the data
 
-fish_main <- read_csv(here("data", "willamette_fish_passage.csv"))
+fish_main <- read_csv(here("data", "willamette_fish_passage.csv")) %>%
+  replace(is.na(.), 0) %>%
+  clean_names() %>% 
+  select("date", "coho", "jack_coho", "steelhead") %>% 
+  mutate(date = lubridate::mdy(date)) %>% 
+  group_by(date, coho, jack_coho, steelhead) %>% 
+  summarize(total_count = sum(coho, jack_coho, steelhead))
+
+
+#time series dataframe 
+fish_ts <- fish_main %>% 
+  as_tsibble(key = NULL, index = date)
+  
+
+#time series df in pivot_longer format
+
+fish_ts_longer <- fish_main %>% 
+  as_tsibble(key = NULL, index = date) %>% 
+  pivot_longer("coho":"steelhead",
+               names_to = "species",
+               values_to = "value") %>% 
+  select(-total_count) %>% 
+  rename(total_count = value)
 
 ```
 
+Explore the data
+```{r}
+
+#explore the data
+
+#individually
+ggplot(data = fish_ts, aes(x = date, y = coho)) +
+  geom_line()
+
+ggplot(data = fish_ts, aes(x = date, y = jack_coho)) +
+  geom_line()
+
+ggplot(data = fish_ts, aes(x = date, y = steelhead)) +
+  geom_line()
+
+#all three together
+ggplot(data = fish_ts_longer, aes(x = date, y = total_count)) +
+  geom_line(aes(color = species)) +
+  facet_wrap(~species, scales = "free")
+
+```
+
+```{r}
+
+#explore data by month and year using index_by() 
+
+#by month
+fish_month <- fish_ts_longer %>% 
+  index_by(yr_mo = ~yearmonth(.)) %>% 
+  group_by(yr_mo) %>% 
+  summarize(month_mean_count = mean(total_count))
+
+ggplot(data = fish_month, aes(x = yr_mo, y = month_mean_count)) +
+  geom_line() +
+  facet_wrap(~month(yr_mo, label = TRUE))
+
+#by year
+fish_year <- fish_ts_longer %>% 
+  index_by(yearly = ~year(.)) %>% 
+  summarize(yearly_mean_count = mean(total_count))
+
+ggplot(data = fish_year, aes(x = yearly, y = yearly_mean_count)) +
+  geom_col() +
+  facet_wrap(~yearly)
+
+```
+
+## Tab 1 - Hannah
+```{r}
+
+```
+
+## Tab 2 - Vanessa Season Plots
+```{r}
+
+#explore total counts with season plots
+
+fish_ts_longer %>% 
+  gg_season(y = total_count)
+
+fish_month %>% 
+  gg_season(y = month_mean_count)
+
+#explore counts per species with season plots
+
+fish_ts %>%
+  gg_season(y = total_count)
+
+# seasonal subseries plot
+
+fish_month %>% 
+  gg_subseries(month_mean_count)
+  
+
+```
+
+## Tab 3 - Tom
+```{r}
+
+```
