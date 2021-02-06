@@ -25,9 +25,8 @@ Summary: This report will look at the adult fish passage recorded from January 2
 
 Source: **Columbia River DART (Data Access in Real Time), 2010.** Data Courtesy of U.S. Army Corps of Engineers, NWD and Chelan, Douglas, and Grant County PUDs, Yakima Klickitat Fisheries Project, Colville Tribes Fish & Wildlife (OBMEP), Oregon Department of Fish & Wildlife, Washington Department of Fish & Wildlife. http://www.cbr.washington.edu/dart/query/adult_graph_text
 
-
+![Sockeye Salmon *(Oncorhynchus nerka)* Credit: Jason Ching/U. Washington](../images/sockeye_salmon1.jpg)
 ```{r}
-# ![Sockeye Salmon *(Oncorhynchus nerka)* Credit: Jason Ching/U. Washington](images/sockeye_salmon1.jpg) # moved the image here. I can't get it to work either..
 
 # **Figure 1.** Map of Willamette Fish Ladder. 
 # ![Credit: US Army Corp of Engineers (link: https://www.nwp.usace.army.mil/willamette/locks/)](images/Willamette_Falls_Locks_area_map.jpg)
@@ -74,6 +73,12 @@ fish_ts_longer <- fish_main %>%
   select(-total_count) %>% 
   rename(total_count = value)
 
+#tab 3 data formatting
+
+fish_longer <- fish_main %>% 
+  pivot_longer("coho":"steelhead",
+               names_to = "species",
+               values_to = "value")
 
 ```
 
@@ -177,5 +182,26 @@ fish_month %>%
 
 ## Tab 3 - Annual Counts by Species (Tom) {.tabset}
 ```{r}
+fish_annual <- fish_longer %>% 
+  mutate(year = as.integer(year(date))) %>% 
+  group_by(year, species) %>% 
+  summarize(fish_yearly_total = sum(value))
 
+fish_annual %>% 
+  ggplot(aes(x = year, y = fish_yearly_total)) +
+  geom_line(aes(color=species)) +
+  labs(
+    title = "Annual totals for fish passage by species (2000-2010)",
+    x = "Year",
+    y = "Count of fish passage"
+  )
+
+str(fish_annual$year)
 ```
+**Figure 1:** The line graph above displays changes in fish passage by fish species between 2000 and 2010.
+
+### Major Trends
+
+- Steelhead observations appear to be most volatile over time with large spikes in passage over the first 5 years eventual stabilization from 2005 to 2009 followed by a large population spike.
+- Jack coho's population remains relatively low and stable over time, seeing a small peak in population in 2008.
+- Coho population has mild volatile over the first 8 years followed by a spike in population grow after 2008.
