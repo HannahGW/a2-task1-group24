@@ -27,7 +27,7 @@ Source: **Columbia River DART (Data Access in Real Time), 2010.** Data Courtesy 
 
 
 ```{r}
-# ![Sockeye Salmon *(Oncorhynchus nerka)* Credit: Jason Ching/U. Washington](images/sockeye_salmon1.jpg) # moved the image here. I can't get it to work either..
+# ![Sockeye Salmon *(Oncorhynchus nerka)* Credit: Jason Ching/U. Washington](images/sockeye_salmon1.jpg) # moved the image here. I can't get it to work either.. #
 
 # **Figure 1.** Map of Willamette Fish Ladder. 
 # ![Credit: US Army Corp of Engineers (link: https://www.nwp.usace.army.mil/willamette/locks/)](images/Willamette_Falls_Locks_area_map.jpg)
