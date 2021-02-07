@@ -17,6 +17,7 @@ library(tsibble)
 library(janitor)
 library(feasts)
 library(slider)
+library(patchwork)
 ```
 
 #### Willamette Falls adult fish passage 
@@ -26,10 +27,12 @@ Summary: This report will look at the adult fish passage recorded from January 2
 Source: **Columbia River DART (Data Access in Real Time), 2010.** Data Courtesy of U.S. Army Corps of Engineers, NWD and Chelan, Douglas, and Grant County PUDs, Yakima Klickitat Fisheries Project, Colville Tribes Fish & Wildlife (OBMEP), Oregon Department of Fish & Wildlife, Washington Department of Fish & Wildlife. http://www.cbr.washington.edu/dart/query/adult_graph_text
 
 ![Sockeye Salmon *(Oncorhynchus nerka)* Credit: Jason Ching/U. Washington](../images/sockeye_salmon1.jpg)
+
+**Figure 1.** Map of Willamette Fish Ladder. 
+![Credit: US Army Corp of Engineers (link: https://www.nwp.usace.army.mil/willamette/locks/)](../images/Willamette_Falls_Locks_area_map.jpg)
 ```{r}
 
-# **Figure 1.** Map of Willamette Fish Ladder. 
-# ![Credit: US Army Corp of Engineers (link: https://www.nwp.usace.army.mil/willamette/locks/)](images/Willamette_Falls_Locks_area_map.jpg)
+
 
 #basic info we should review from the metadata: http://www.cbr.washington.edu/dart/query/adult_proj_sum
 
@@ -82,8 +85,7 @@ fish_longer <- fish_main %>%
 
 ```
 
-Explore the data
-```{r}
+```{r, fig.show='hide'}
 # we'll want to hide all these outputs.
 #explore the data
 
@@ -104,7 +106,7 @@ ggplot(data = fish_ts_longer, aes(x = date, y = total_count)) +
 
 ```
 
-```{r}
+```{r, echo=FALSE, results='hide', fig.show='hide'}
 
 #explore data by month and year using index_by() 
 
@@ -130,34 +132,49 @@ ggplot(data = fish_year, aes(x = yearly, y = yearly_mean_count)) +
 ```
 
 ## Tab 1 - Time Series (Hannah) {.tabset}
-```{r, fig.cap="**Figure 2.** Counts of Coho, Jack Coho, and Steelhead Salmon between 2001-2010"}
+```{r, fig.cap="**Figure 2.** Time series of Coho, Jack Coho, and Steelhead counts on the Willamette fish ladder between 2001 and 2010."}
 # explore data with initial graph
-ggplot(data = fish_ts_longer, aes(x=date, y=total_count)) +
-  geom_line(aes(color=species)) +
-  facet_wrap(~month(date, label = TRUE)) 
+# ggplot(data = fish_ts_longer, aes(x=date, y=total_count)) +
+#   geom_line() +
+#   facet_wrap(~species)
 
-# Testing filtering out year. 2005-2010
-# fish_year_filter <- fish_ts_longer %>% 
-#   filter_index("2005-01" ~ "2010-12")
-# 
-# ggplot(data = fish_year_filter, aes(x=date, y=total_count)) +
-#   geom_line(aes(color=species)) +
-#   facet_wrap(~year(date, label = TRUE))
-
-# Filter for individual species and then use pathwork to combine the figures
+# get species alone and use patchwork
 # coho
+coho_tab1 <- fish_ts_longer %>% 
+  filter(species == "coho")
 
-# fish_coho <- fish_ts_longer %>% 
-#   filter(species == "coho")
-# 
-# coho_ts <- ggplot(data=fish_coho, aes(x=date, y=total_count)) +
-#   geom_line() %>% 
-#   facet_wrap(~month(date, label = TRUE))
+coho_graph <- ggplot(data=coho_tab1, aes(x=date, y=total_count)) +
+  geom_line() +
+  labs(title = "Coho", y="total count")
 
+# jack_coho
+jackcoho_tab1 <- fish_ts_longer %>% 
+  filter(species == "jack_coho")
+
+jackcoho_graph <- ggplot(data=jackcoho_tab1, aes(x=date, y=total_count)) +
+  geom_line() +
+  labs(title = "Jack Coho", y = "total count")
+
+# steelhead
+steelhead_tab1 <- fish_ts_longer %>% 
+  filter(species == "steelhead")
+
+steelhead_graph <- ggplot(data=steelhead_tab1, aes(x=date, y=total_count)) +
+  geom_line() +
+  labs(title = "Steelhead", y = "total count")
+
+# patchwork
+
+tab1_comb <- coho_graph / jackcoho_graph / steelhead_graph
+tab1_comb
 ```
 
+- Steelhead are by far the most abundant fish in the Willamette River, or they are just better at accessing the fish ladder. Steelhead have seasonality of when they pass through the fish ladder, but some years have larger counts than others.
+
+- Both Coho and Jack Coho counts do not have the same seasonality that Steelhead have. Their counts are relatively low and there is a lack of an overall trend. It seems, though, that as more data gets collected, we may see some seasonality with their counts. 
+
 ## Tab 2 - Season Plots (Vanessa) {.tabset}
-```{r}
+```{r, messages=FALSE, warning=FALSE}
 
 #explore total counts with season plots
 
@@ -181,7 +198,7 @@ fish_month %>%
 ```
 
 ## Tab 3 - Annual Counts by Species (Tom) {.tabset}
-```{r}
+```{r, messages=FALSE, warning=FALSE}
 fish_annual <- fish_longer %>% 
   mutate(year = as.integer(year(date))) %>% 
   group_by(year, species) %>% 
