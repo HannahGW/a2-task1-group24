@@ -151,9 +151,7 @@ tab1_comb <- coho_graph / jackcoho_graph / steelhead_graph
 tab1_comb
 ```
 
-Time Series Discussion
 
-- Steelhead are by far the most abundant fish in the Willamette River, or they are just better at accessing the fish ladder. Steelhead have seasonality of when they pass through the fish ladder, but some years have larger counts than others.There is no apparent trend in Steelhead counts as it varies year to year. 
 
 - Both Coho and Jack Coho counts do not have the same seasonality that Steelhead have. Their counts are relatively low and there is a lack of an overall trend. It seems, though, that as more data gets collected, we may see some seasonality with their counts. 
 
