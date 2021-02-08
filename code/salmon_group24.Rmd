@@ -73,6 +73,11 @@ fish_ts_longer <- fish_main %>%
   pivot_longer("coho":"steelhead",
                names_to = "species",
                values_to = "value") %>% 
+  mutate(species = 
+         ifelse(species == "coho", "Coho",
+         ifelse(species == "jack_coho", "Jack Coho", 
+         ifelse(species == "steelhead", "Steelhead", 
+                "" )))) %>% 
   select(-total_count) %>% 
   rename(total_count = value)
 
@@ -179,7 +184,11 @@ tab1_comb
 #explore total counts with season plots
 
 fish_ts_longer %>% 
-  gg_season(y = total_count)
+  gg_season(y = total_count) +
+  theme_minimal() +
+  labs(x = "Date", y = "Total Count", 
+       title = "Total Counts for Coho, Jack Coho, and Steelhead at Willamette Falls, Oregon",
+       subtitle = "2001-2010")
 
 fish_month %>% 
   gg_season(y = month_mean_count)
@@ -196,6 +205,11 @@ fish_month %>%
   
 
 ```
+- Observed seasonal patterns can be seen across all three species. Coho and jack coho have similar seasonal passage of the falls, whereas steelhead have a longer, more sustained seasonal passage.
+
+- Coho and jack coho have similar seasonal patterns with a serge occurring between late September and early October. Coho appear to have an increase in number of fish passing through in 2009 and 2010. Jack coho had a their highest count in 2008. 
+
+- Steelhead trout pass through the falls over a much longer, sustained period between January through July. There is a slight rise in counts in May and June every year and then much less after July and August. In general, there are more steelhead passing through the falls each year than coho and jack coho. 
 
 ## Tab 3 - Annual Counts by Species (Tom) {.tabset}
 ```{r, messages=FALSE, warning=FALSE}
