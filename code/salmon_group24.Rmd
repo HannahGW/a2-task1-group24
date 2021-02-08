@@ -24,7 +24,7 @@ library(patchwork)
 
 Summary: This report will look at the adult fish passage recorded from January 2001 to December 2010 at the Willamette Falls fish ladder on the Willamette River (Oregon). This data was recorded by and accessible through the Columbia River DART project. Fish counting through Willamette Falls fishway was recorded using video cameras and time lapsed video recorders to record fish passage 24 hrs/day, 365 days/year.
 
-Source: **Columbia River DART (Data Access in Real Time), 2010.** Data Courtesy of U.S. Army Corps of Engineers, NWD and Chelan, Douglas, and Grant County PUDs, Yakima Klickitat Fisheries Project, Colville Tribes Fish & Wildlife (OBMEP), Oregon Department of Fish & Wildlife, Washington Department of Fish & Wildlife. http://www.cbr.washington.edu/dart/query/adult_graph_text
+Source: **Columbia River DART (Data Access in Real Time), 2010.** [Data Courtesy of U.S. Army Corps of Engineers, NWD and Chelan, Douglas, and Grant County PUDs, Yakima Klickitat Fisheries Project, Colville Tribes Fish & Wildlife (OBMEP), Oregon Department of Fish & Wildlife, Washington Department of Fish & Wildlife.](http://www.cbr.washington.edu/dart/query/adult_graph_text)
 
 ![Sockeye Salmon *(Oncorhynchus nerka)* Credit: Jason Ching/U. Washington](../images/sockeye_salmon1.jpg)
 
@@ -73,6 +73,11 @@ fish_ts_longer <- fish_main %>%
   pivot_longer("coho":"steelhead",
                names_to = "species",
                values_to = "value") %>% 
+  mutate(species = 
+         ifelse(species == "coho", "Coho",
+         ifelse(species == "jack_coho", "Jack Coho", 
+         ifelse(species == "steelhead", "Steelhead", 
+                "" )))) %>% 
   select(-total_count) %>% 
   rename(total_count = value)
 
@@ -174,28 +179,47 @@ tab1_comb
 - Both Coho and Jack Coho counts do not have the same seasonality that Steelhead have. Their counts are relatively low and there is a lack of an overall trend. It seems, though, that as more data gets collected, we may see some seasonality with their counts. 
 
 ## Tab 2 - Season Plots (Vanessa) {.tabset}
-```{r, messages=FALSE, warning=FALSE}
+```{r, fig.cap="**Figure 3.** Season plots of Coho, Jack Coho, and Steelhead counts on the Willamette fish ladder between 2001 and 2010.", messages=FALSE, warning=FALSE}
 
 #explore total counts with season plots
 
-fish_ts_longer %>% 
-  gg_season(y = total_count)
+#fish_month %>% 
+  #gg_season(y = month_mean_count)
 
-fish_month %>% 
-  gg_season(y = month_mean_count)
+#----------#
 
 #explore counts per species with season plots
 
-fish_ts %>%
-  gg_season(y = total_count)
+#fish_ts %>%
+  #gg_season(y = total_count)
+
+#----------#
 
 # seasonal subseries plot
 
-fish_month %>% 
-  gg_subseries(month_mean_count)
-  
+#fish_month %>% 
+  #gg_subseries(month_mean_count)
+
+#----------#
+
+#final sesason plot
+
+fish_ts_longer %>% 
+  gg_season(y = total_count) +
+  theme_minimal() +
+  labs(x = "Date", y = "Total Count", 
+       title = "Total Counts for Coho, Jack Coho, and Steelhead at Willamette Falls, Oregon",
+       subtitle = "2001-2010")
 
 ```
+
+### Season Plots
+
+- Observed seasonal patterns can be seen across all three species. Coho and jack coho have similar seasonal passage of the falls, whereas steelhead have a longer, more sustained seasonal passage.
+
+- Coho and jack coho have similar seasonal patterns with a serge occurring between late September and early October. Coho appear to have an increase in number of fish passing through in 2009 and 2010. Jack coho had a their highest count in 2008. 
+
+- Steelhead trout pass through the falls over a much longer, sustained period between January through July. There is a slight rise in counts in May and June every year and then much less after July and August. In general, there are more steelhead passing through the falls each year than coho and jack coho. 
 
 ## Tab 3 - Annual Counts by Species (Tom) {.tabset}
 ```{r, messages=FALSE, warning=FALSE}
